@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isUser(uid);
+      allow delete: if false;
+    }
+
+    match /addresses/{addressId} {
+      allow read: if signedIn()
+        && (resource.data.isPublic == true || resource.data.ownerId == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.isPublic is bool
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+
+      allow update: if isUser(resource.data.ownerId)
+        && request.resource.data.ownerId == resource.data.ownerId;
+
+      allow delete: if isUser(resource.data.ownerId);
+
+      match /comments/{commentId} {
+        function parentAddress() {
+          return get(/databases/$(database)/documents/addresses/$(addressId)).data;
+        }
+        function canSeeParent() {
+          return parentAddress().isPublic == true || parentAddress().ownerId == request.auth.uid;
+        }
+
+        allow read: if signedIn() && canSeeParent();
+
+        allow create: if signedIn() && canSeeParent()
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5;
+
+        allow delete: if signedIn()
+          && (resource.data.authorId == request.auth.uid
+              || parentAddress().ownerId == request.auth.uid);
+
+        allow update: if false;
+      }
+    }
+  }
+}

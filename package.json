@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "android": "react-native run-android",
+    "lint": "eslint .",
+    "test": "jest",
+    "app": "mkdir -p android/app/src/main/assets && react-native bundle --platform android --dev false --reset-cache --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew installDebug && adb shell am force-stop com.mesbonnesadresses && adb shell monkey -p com.mesbonnesadresses 1",
+    "logs": "adb logcat -c && adb logcat -s ReactNativeJS:V ReactNative:E AndroidRuntime:E"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
