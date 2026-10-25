@@ -8,19 +8,20 @@ import { updateProfilePhoto } from '../services/userService';
 import { colors, spacing } from '../theme';
 
 export function ProfileScreen() {
-    const { user, logout, refreshUser } = useAuth();
+    const { user, profile, logout } = useAuth();
     const [uploading, setUploading] = useState(false);
+
+    const displayName = profile?.displayName ?? user?.displayName ?? '';
 
     const onChangePhoto = async () => {
         if (!user) return;
         try {
-            const uri = await chooseImage();
-            if (!uri) return;
+            const image = await chooseImage();
+            if (!image) return;
             setUploading(true);
-            await updateProfilePhoto(user, uri);
-            refreshUser();
+            await updateProfilePhoto(user.uid, image.dataUri);
         } catch (e: any) {
-            Alert.alert('Erreur', e?.message ?? "Impossible de mettre à jour la photo");
+            Alert.alert('Erreur', e?.message ?? 'Impossible de mettre à jour la photo');
         } finally {
             setUploading(false);
         }
@@ -29,7 +30,7 @@ export function ProfileScreen() {
     return (
         <View style={styles.container}>
             <Pressable testID="profile-avatar" onPress={onChangePhoto} disabled={uploading}>
-                <Avatar uri={user?.photoURL} name={user?.displayName} size={120} />
+                <Avatar uri={profile?.photoURL} name={displayName} size={120} />
                 {uploading && (
                     <View style={styles.overlay}>
                         <ActivityIndicator color={colors.white} />
@@ -38,7 +39,7 @@ export function ProfileScreen() {
             </Pressable>
             <Text style={styles.hint}>Touchez la photo pour la modifier</Text>
 
-            <Text style={styles.name}>{user?.displayName}</Text>
+            <Text style={styles.name}>{displayName}</Text>
             <Text style={styles.email}>{user?.email}</Text>
 
             <View style={styles.actions}>

@@ -9,9 +9,11 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import { subscribeUserProfile, UserProfile } from '../services/userService';
 
 type AuthContextValue = {
   user: User | null;
+  profile: UserProfile | null;
   initializing: boolean;
   register: (displayName: string, email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
@@ -23,9 +25,11 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [, setProfileVersion] = useState(0);
 
+  // Session Firebase Auth
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -33,6 +37,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     return unsubscribe;
   }, []);
+
+  // Profil Firestore (pseudo + photo) 
+  useEffect(() => {
+    if (!user) {
+      setProfile(null);
+      return;
+    }
+    return subscribeUserProfile(user.uid, setProfile);
+  }, [user]);
 
   const refreshUser = useCallback(() => setProfileVersion((v) => v + 1), []);
 
@@ -56,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, initializing, register, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, profile, initializing, register, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

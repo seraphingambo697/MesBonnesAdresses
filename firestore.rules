@@ -5,9 +5,18 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isUser(uid) { return signedIn() && request.auth.uid == uid; }
 
+    // Image : null ou data URI base64 de moins de ~900 Ko
+    function validImage(value) {
+      return value == null
+        || (value is string && value.matches('^data:image/.*') && value.size() < 900000);
+    }
+
     match /users/{uid} {
       allow read: if signedIn();
-      allow create, update: if isUser(uid);
+      allow create, update: if isUser(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'photoURL', 'createdAt'])
+        && request.resource.data.displayName is string
+        && validImage(request.resource.data.photoURL);
       allow delete: if false;
     }
 
@@ -19,10 +28,14 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.isPublic is bool
         && request.resource.data.name is string
-        && request.resource.data.name.size() > 0;
+        && request.resource.data.name.size() > 0
+        && request.resource.data.latitude is number
+        && request.resource.data.longitude is number
+        && validImage(request.resource.data.get('photoURL', null));
 
       allow update: if isUser(resource.data.ownerId)
-        && request.resource.data.ownerId == resource.data.ownerId;
+        && request.resource.data.ownerId == resource.data.ownerId
+        && validImage(request.resource.data.get('photoURL', null));
 
       allow delete: if isUser(resource.data.ownerId);
 
@@ -40,7 +53,8 @@ service cloud.firestore {
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.rating is int
           && request.resource.data.rating >= 1
-          && request.resource.data.rating <= 5;
+          && request.resource.data.rating <= 5
+          && validImage(request.resource.data.get('photoURL', null));
 
         allow delete: if signedIn()
           && (resource.data.authorId == request.auth.uid
