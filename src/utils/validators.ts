@@ -10,7 +10,12 @@ export type RegisterForm = {
 
 export type LoginForm = { email: string; password: string };
 
+export type AddressForm = { name: string; description: string };
+
 export type FormErrors<T> = Partial<Record<keyof T, string>>;
+
+export const ADDRESS_NAME_MAX = 60;
+export const ADDRESS_DESCRIPTION_MAX = 500;
 
 export function validateRegister(form: RegisterForm): FormErrors<RegisterForm> {
   const errors: FormErrors<RegisterForm> = {};
@@ -26,6 +31,16 @@ export function validateLogin(form: LoginForm): FormErrors<LoginForm> {
   const errors: FormErrors<LoginForm> = {};
   if (!isValidEmail(form.email)) errors.email = 'Adresse e-mail invalide';
   if (!form.password) errors.password = 'Le mot de passe est obligatoire';
+  return errors;
+}
+
+export function validateAddress(form: AddressForm): FormErrors<AddressForm> {
+  const errors: FormErrors<AddressForm> = {};
+  const name = form.name.trim();
+  if (!name) errors.name = 'Le nom est obligatoire';
+  else if (name.length > ADDRESS_NAME_MAX) errors.name = `${ADDRESS_NAME_MAX} caractères maximum`;
+  if (form.description.trim().length > ADDRESS_DESCRIPTION_MAX)
+    errors.description = `${ADDRESS_DESCRIPTION_MAX} caractères maximum`;
   return errors;
 }
 

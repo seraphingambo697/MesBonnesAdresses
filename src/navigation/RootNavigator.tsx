@@ -8,10 +8,12 @@ import { LoginScreen } from '../screens/auth/LoginScreen';
 import { RegisterScreen } from '../screens/auth/RegisterScreen';
 import { MapScreen } from '../screens/MapScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { AuthStackParamList, AppTabParamList } from './types';
+import { CreateAddressScreen } from '../screens/CreateAddressScreen';
+import { AuthStackParamList, AppTabParamList, AppStackParamList } from './types';
 import { colors } from '../theme';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const AppStack = createNativeStackNavigator<AppStackParamList>();
 const Tab = createBottomTabNavigator<AppTabParamList>();
 
 const tabIcon = (emoji: string) => () => <Text style={{ fontSize: 20 }}>{emoji}</Text>;
@@ -57,5 +59,14 @@ export function RootNavigator() {
     );
   }
 
-  return <AppTabs />;
+  return (
+    <AppStack.Navigator>
+      <AppStack.Screen name="Tabs" component={AppTabs} options={{ headerShown: false }} />
+      <AppStack.Screen
+        name="CreateAddress"
+        component={CreateAddressScreen}
+        options={{ title: 'Nouvelle adresse', presentation: 'modal' }}
+      />
+    </AppStack.Navigator>
+  );
 }

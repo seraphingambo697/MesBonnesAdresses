@@ -1,15 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MapView, Camera, UserLocation } from '@maplibre/maplibre-react-native';
 import { requestLocationPermission } from '../services/location';
 import { OSM_STYLE } from '../config/mapStyle';
-import { DEFAULT_CENTER, DEFAULT_ZOOM, STREET_ZOOM, toLngLat } from '../utils/geo';
+import { DEFAULT_CENTER, DEFAULT_ZOOM, STREET_ZOOM, toLngLat, fromLngLat } from '../utils/geo';
 import { Coords } from '../types/models';
+import { AppStackParamList } from '../navigation/types';
 import { colors, spacing } from '../theme';
 
 type UserLocationUpdate = { coords: { latitude: number; longitude: number } };
+type Nav = NativeStackNavigationProp<AppStackParamList>;
 
 export function MapScreen() {
+    const navigation = useNavigation<Nav>();
     const cameraRef = useRef<any>(null);
     const hasCenteredOnce = useRef(false);
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -27,7 +32,6 @@ export function MapScreen() {
         });
     }, []);
 
-    // Appelé à chaque nouvelle position GPS
     const onUserLocationUpdate = (location: UserLocationUpdate) => {
         const coords = {
             latitude: location.coords.latitude,
@@ -35,11 +39,14 @@ export function MapScreen() {
         };
         setUserCoords(coords);
 
-        // Centrage automatique au premier point reçu
         if (!hasCenteredOnce.current) {
             hasCenteredOnce.current = true;
             centerOn(coords);
         }
+    };
+
+    const openCreate = (coords: Coords) => {
+        navigation.navigate('CreateAddress', coords);
     };
 
     const onRecenter = () => {
@@ -47,11 +54,20 @@ export function MapScreen() {
         else Alert.alert('Position', 'Localisation en cours… Vérifie que le GPS est activé.');
     };
 
+    // ＋ : adresse à ma position
     const onAdd = () => {
-        Alert.alert('Bientôt', "La création d'adresse arrive à l'étape suivante.");
+        if (userCoords) openCreate(userCoords);
+        else Alert.alert('Position inconnue', 'Fais un appui long sur la carte pour choisir un emplacement.');
     };
 
-    // On attend la réponse à la permission avant d'afficher la carte
+    // Appui long : adresse à l'endroit touché
+    const onLongPress = (feature: any) => {
+        const lngLat = feature?.geometry?.coordinates;
+        if (Array.isArray(lngLat) && lngLat.length >= 2) {
+            openCreate(fromLngLat([lngLat[0], lngLat[1]]));
+        }
+    };
+
     if (hasPermission === null) {
         return (
             <View style={styles.center}>
@@ -69,6 +85,7 @@ export function MapScreen() {
                 logoEnabled={false}
                 attributionEnabled
                 attributionPosition={{ bottom: 8, left: 8 }}
+                onLongPress={onLongPress}
             >
                 <Camera
                     ref={cameraRef}
@@ -78,9 +95,7 @@ export function MapScreen() {
                     }}
                 />
 
-                {hasPermission && (
-                    <UserLocation visible animated onUpdate={onUserLocationUpdate} />
-                )}
+                {hasPermission && <UserLocation visible animated onUpdate={onUserLocationUpdate} />}
             </MapView>
 
             {!hasPermission && (
@@ -90,6 +105,10 @@ export function MapScreen() {
                     </Text>
                 </View>
             )}
+
+            <View style={styles.hint}>
+                <Text style={styles.hintText}>Appui long sur la carte pour ajouter une adresse</Text>
+            </View>
 
             <Pressable testID="recenter-button" style={[styles.fab, styles.fabSecondary]} onPress={onRecenter}>
                 <Text style={styles.fabIcon}>🎯</Text>
@@ -115,6 +134,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     bannerText: { color: colors.white, fontSize: 13 },
+    hint: {
+        position: 'absolute',
+        top: spacing.xl,
+        alignSelf: 'center',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.xs,
+        borderRadius: 16,
+    },
+    hintText: { color: colors.white, fontSize: 12 },
     fab: {
         position: 'absolute',
         right: spacing.lg,
