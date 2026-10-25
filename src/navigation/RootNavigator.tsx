@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { RegisterScreen } from '../screens/auth/RegisterScreen';
-import { HomeScreen } from '../screens/HomeScreen';
+import { MapScreen } from '../screens/MapScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { AuthStackParamList, AppTabParamList } from './types';
 import { colors } from '../theme';
@@ -26,8 +26,13 @@ function AppTabs() {
     >
       <Tab.Screen
         name="Map"
-        component={HomeScreen}
-        options={{ title: 'Carte', tabBarIcon: tabIcon('🗺️'), tabBarButtonTestID: 'tab-map' }}
+        component={MapScreen}
+        options={{
+          title: 'Carte',
+          headerShown: false,
+          tabBarIcon: tabIcon('🗺️'),
+          tabBarButtonTestID: 'tab-map',
+        }}
       />
       <Tab.Screen
         name="Profile"
