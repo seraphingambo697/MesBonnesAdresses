@@ -5,12 +5,12 @@ import { getStorage } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-  apiKey: 'xxx',
-  authDomain: 'xxx.firebaseapp.com',
-  projectId: 'xxx',
-  storageBucket: 'xxx.firebasestorage.app',
-  messagingSenderId: 'xxx',
-  appId: 'xxx',
+  apiKey: 'AIzaSyCmVOq28Ou19YH_uuyFrnnp7Pcac4AfPcA',
+  authDomain: 'mes-bonnes-adresses-36e1d.firebaseapp.com',
+  projectId: 'mes-bonnes-adresses-36e1d',
+  storageBucket: 'mes-bonnes-adresses-36e1d.firebasestorage.app',
+  messagingSenderId: '231127163414',
+  appId: '1:231127163414:web:f91a450a9bbebc6918cb37',
 };
 
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
