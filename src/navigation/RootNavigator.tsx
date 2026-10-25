@@ -3,14 +3,17 @@ import { Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../context/AuthContext';
+import { AddressesProvider } from '../context/AddressesContext';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { RegisterScreen } from '../screens/auth/RegisterScreen';
 import { MapScreen } from '../screens/MapScreen';
+import { AddressesScreen } from '../screens/AddressesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { CreateAddressScreen } from '../screens/CreateAddressScreen';
+import { AddressDetailScreen } from '../screens/AddressDetailScreen';
 import { AuthStackParamList, AppTabParamList, AppStackParamList } from './types';
 import { colors } from '../theme';
+import { CreateAddressScreen } from '../screens/CreateAddressScreen';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
@@ -37,6 +40,11 @@ function AppTabs() {
         }}
       />
       <Tab.Screen
+        name="Addresses"
+        component={AddressesScreen}
+        options={{ title: 'Adresses', tabBarIcon: tabIcon('📋'), tabBarButtonTestID: 'tab-addresses' }}
+      />
+      <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profil', tabBarIcon: tabIcon('👤'), tabBarButtonTestID: 'tab-profile' }}
@@ -60,13 +68,16 @@ export function RootNavigator() {
   }
 
   return (
-    <AppStack.Navigator>
-      <AppStack.Screen name="Tabs" component={AppTabs} options={{ headerShown: false }} />
-      <AppStack.Screen
-        name="CreateAddress"
-        component={CreateAddressScreen}
-        options={{ title: 'Nouvelle adresse', presentation: 'modal' }}
-      />
-    </AppStack.Navigator>
+    <AddressesProvider>
+      <AppStack.Navigator>
+        <AppStack.Screen name="Tabs" component={AppTabs} options={{ headerShown: false }} />
+        <AppStack.Screen
+          name="CreateAddress"
+          component={CreateAddressScreen}
+          options={{ title: 'Nouvelle adresse', presentation: 'modal' }}
+        />
+        <AppStack.Screen name="AddressDetail" component={AddressDetailScreen} options={{ title: 'Adresse' }} />
+      </AppStack.Navigator>
+    </AddressesProvider>
   );
 }

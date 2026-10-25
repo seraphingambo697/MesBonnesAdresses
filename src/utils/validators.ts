@@ -12,10 +12,13 @@ export type LoginForm = { email: string; password: string };
 
 export type AddressForm = { name: string; description: string };
 
+export type CommentFormValues = { text: string; rating: number };
+
 export type FormErrors<T> = Partial<Record<keyof T, string>>;
 
 export const ADDRESS_NAME_MAX = 60;
 export const ADDRESS_DESCRIPTION_MAX = 500;
+export const COMMENT_TEXT_MAX = 500;
 
 export function validateRegister(form: RegisterForm): FormErrors<RegisterForm> {
   const errors: FormErrors<RegisterForm> = {};
@@ -41,6 +44,16 @@ export function validateAddress(form: AddressForm): FormErrors<AddressForm> {
   else if (name.length > ADDRESS_NAME_MAX) errors.name = `${ADDRESS_NAME_MAX} caractères maximum`;
   if (form.description.trim().length > ADDRESS_DESCRIPTION_MAX)
     errors.description = `${ADDRESS_DESCRIPTION_MAX} caractères maximum`;
+  return errors;
+}
+
+export function validateComment(form: CommentFormValues): FormErrors<CommentFormValues> {
+  const errors: FormErrors<CommentFormValues> = {};
+  if (!Number.isInteger(form.rating) || form.rating < 1 || form.rating > 5)
+    errors.rating = 'Choisis une note entre 1 et 5 étoiles';
+  const text = form.text.trim();
+  if (!text) errors.text = "Écris quelques mots sur l'adresse";
+  else if (text.length > COMMENT_TEXT_MAX) errors.text = `${COMMENT_TEXT_MAX} caractères maximum`;
   return errors;
 }
 

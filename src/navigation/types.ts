@@ -5,11 +5,12 @@ export type AuthStackParamList = {
 
 export type AppTabParamList = {
   Map: undefined;
+  Addresses: undefined;
   Profile: undefined;
 };
 
-// les onglets + les écrans qui s'ouvrent par-dessus
 export type AppStackParamList = {
   Tabs: undefined;
   CreateAddress: { latitude: number; longitude: number };
+  AddressDetail: { addressId: string };
 };
