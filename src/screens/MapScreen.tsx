@@ -6,8 +6,7 @@ import {
     MapView,
     Camera,
     UserLocation,
-    ShapeSource,
-    CircleLayer,
+    MarkerView,
 } from '@maplibre/maplibre-react-native';
 import { useAddresses } from '../context/AddressesContext';
 import { AddressCard } from '../components/AddressCard';
@@ -129,17 +128,21 @@ export function MapScreen() {
                     }}
                 />
 
-                <ShapeSource id="addresses" shape={shape} onPress={onMarkerPress} hitbox={{ width: 30, height: 30 }}>
-                    <CircleLayer
-                        id="addresses-circles"
-                        style={{
-                            circleRadius: 10,
-                            circleColor: ['case', ['get', 'mine'], colors.primary, OTHERS_COLOR],
-                            circleStrokeWidth: 3,
-                            circleStrokeColor: colors.white,
-                        }}
-                    />
-                </ShapeSource>
+                {myAddresses.map((a) => (
+                    <MarkerView key={`mine-${a.id}`} coordinate={toLngLat(a)} anchor={{ x: 0.5, y: 0.5 }} allowOverlap>
+                        <Pressable testID={`marker-${a.id}`} onPress={() => setSelected(a)} hitSlop={8}>
+                            <View style={[styles.marker, { backgroundColor: colors.primary }]} />
+                        </Pressable>
+                    </MarkerView>
+                ))}
+
+                {othersAddresses.map((a) => (
+                    <MarkerView key={`other-${a.id}`} coordinate={toLngLat(a)} anchor={{ x: 0.5, y: 0.5 }} allowOverlap>
+                        <Pressable testID={`marker-${a.id}`} onPress={() => setSelected(a)} hitSlop={8}>
+                            <View style={[styles.marker, { backgroundColor: OTHERS_COLOR }]} />
+                        </Pressable>
+                    </MarkerView>
+                ))}
 
                 {hasPermission && <UserLocation visible animated onUpdate={onUserLocationUpdate} />}
             </MapView>
@@ -188,6 +191,14 @@ export function MapScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+    marker: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 3,
+        borderColor: colors.white,
+        elevation: 4,
+    },
     banner: {
         position: 'absolute',
         top: spacing.md,
