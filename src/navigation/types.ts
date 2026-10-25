@@ -3,6 +3,7 @@ export type AuthStackParamList = {
   Register: undefined;
 };
 
-export type AppStackParamList = {
-  Home: undefined;
+export type AppTabParamList = {
+  Map: undefined;
+  Profile: undefined;
 };

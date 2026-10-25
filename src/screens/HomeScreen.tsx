@@ -1,21 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { AppButton } from '../components/AppButton';
 import { colors, spacing } from '../theme';
 
 export function HomeScreen() {
-  const { user, logout } = useAuth();
-
+  const { user } = useAuth();
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Bonjour {user?.displayName ?? ''} 👋</Text>
-      <AppButton testID="logout-button" title="Se déconnecter" variant="danger" onPress={logout} />
+      <Text style={styles.sub}>La carte arrive à la prochaine étape.</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.background, gap: spacing.lg },
-  text: { fontSize: 20, textAlign: 'center', color: colors.text },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.lg, backgroundColor: colors.background },
+  text: { fontSize: 20, color: colors.text },
+  sub: { fontSize: 14, color: colors.textMuted, marginTop: spacing.sm },
 });

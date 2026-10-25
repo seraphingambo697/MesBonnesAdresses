@@ -1,14 +1,42 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../context/AuthContext';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { RegisterScreen } from '../screens/auth/RegisterScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import { AuthStackParamList, AppStackParamList } from './types';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { AuthStackParamList, AppTabParamList } from './types';
+import { colors } from '../theme';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
-const AppStack = createNativeStackNavigator<AppStackParamList>();
+const Tab = createBottomTabNavigator<AppTabParamList>();
+
+const tabIcon = (emoji: string) => () => <Text style={{ fontSize: 20 }}>{emoji}</Text>;
+
+function AppTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+      }}
+    >
+      <Tab.Screen
+        name="Map"
+        component={HomeScreen}
+        options={{ title: 'Carte', tabBarIcon: tabIcon('🗺️'), tabBarButtonTestID: 'tab-map' }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: 'Profil', tabBarIcon: tabIcon('👤'), tabBarButtonTestID: 'tab-profile' }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export function RootNavigator() {
   const { user, initializing } = useAuth();
@@ -24,9 +52,5 @@ export function RootNavigator() {
     );
   }
 
-  return (
-    <AppStack.Navigator>
-      <AppStack.Screen name="Home" component={HomeScreen} options={{ title: 'Accueil' }} />
-    </AppStack.Navigator>
-  );
+  return <AppTabs />;
 }
