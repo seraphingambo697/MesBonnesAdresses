@@ -1,0 +1,33 @@
+appId: com.mesbonnesadresses
+name: 02_login_logout
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible:
+      id: "login-email"
+    timeout: 15000
+- tapOn:
+    id: "login-email"
+- inputText: ${EMAIL}
+- tapOn:
+    id: "login-password"
+- inputText: "mauvaismotdepasse"
+- hideKeyboard
+- tapOn:
+    id: "login-submit"
+- extendedWaitUntil:
+    visible: "E-mail ou mot de passe incorrect"
+    timeout: 15000
+- tapOn: "OK"
+- runFlow: subflows/login.yaml
+- tapOn:
+    id: "tab-profile"
+- tapOn:
+    id: "logout-button"
+- extendedWaitUntil:
+    visible:
+      id: "login-submit"
+    timeout: 10000

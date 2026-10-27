@@ -1,0 +1,23 @@
+appId: com.mesbonnesadresses
+name: 04_form_validation
+---
+- runFlow: subflows/login.yaml
+- longPressOn:
+    point: "50%,50%"
+- extendedWaitUntil:
+    visible:
+      id: "address-name"
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      id: "address-save"
+    direction: DOWN
+- tapOn:
+    id: "address-save"
+- scrollUntilVisible:
+    element:
+      text: "Le nom est obligatoire"
+    direction: UP
+- back
+- assertVisible:
+    id: "add-address-button"

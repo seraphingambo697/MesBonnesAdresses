@@ -1,0 +1,86 @@
+appId: com.mesbonnesadresses
+name: 03_address_lifecycle
+---
+- runFlow: subflows/login.yaml
+- evalScript: ${output.addressName = 'E2E ' + new Date().getTime()}
+
+# Creation : appui long au centre de la carte
+- longPressOn:
+    point: "50%,50%"
+- extendedWaitUntil:
+    visible:
+      id: "address-name"
+    timeout: 10000
+- tapOn:
+    id: "address-name"
+- inputText: ${output.addressName}
+- hideKeyboard
+- tapOn:
+    id: "address-description"
+- inputText: "Adresse creee par un test Maestro"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "address-public-switch"
+    direction: DOWN
+- tapOn:
+    id: "address-public-switch"
+- scrollUntilVisible:
+    element:
+      id: "address-save"
+    direction: DOWN
+- tapOn:
+    id: "address-save"
+- extendedWaitUntil:
+    visible: "Adresse enregistrée"
+    timeout: 15000
+- tapOn: "OK"
+
+# Visualisation
+- tapOn:
+    id: "tab-addresses"
+- tapOn:
+    id: "segment-mine"
+- extendedWaitUntil:
+    visible: ${output.addressName}
+    timeout: 10000
+
+# Avis
+- tapOn: ${output.addressName}
+- scrollUntilVisible:
+    element:
+      id: "comment-rating-5"
+    direction: DOWN
+- tapOn:
+    id: "comment-rating-5"
+- scrollUntilVisible:
+    element:
+      id: "comment-text"
+    direction: DOWN
+- tapOn:
+    id: "comment-text"
+- inputText: "Excellent test e2e"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "comment-submit"
+    direction: DOWN
+- tapOn:
+    id: "comment-submit"
+- scrollUntilVisible:
+    element:
+      text: "Excellent test e2e"
+    direction: UP
+    timeout: 15000
+
+# Suppression
+- scrollUntilVisible:
+    element:
+      id: "address-delete-button"
+    direction: DOWN
+- tapOn:
+    id: "address-delete-button"
+- tapOn: "Supprimer"
+- extendedWaitUntil:
+    notVisible: ${output.addressName}
+    timeout: 10000

@@ -8,7 +8,11 @@
     "lint": "eslint .",
     "test": "jest",
     "app": "mkdir -p android/app/src/main/assets && react-native bundle --platform android --dev false --reset-cache --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew installDebug && adb shell am force-stop com.mesbonnesadresses && adb shell monkey -p com.mesbonnesadresses 1",
-    "logs": "adb logcat -c && adb logcat -s ReactNativeJS:V ReactNative:E AndroidRuntime:E"
+    "logs": "adb logcat -c && adb logcat -s ReactNativeJS:V ReactNative:E AndroidRuntime:E",
+    "test:coverage": "jest --coverage",
+    "apk": "find android/app/src/main/res -name 'node_modules_*' -delete; rm -f android/app/src/main/assets/index.android.bundle; cd android && ./gradlew assembleRelease && cp app/build/outputs/apk/release/app-release.apk ../MesBonnesAdresses.apk && echo '✅ APK prêt : MesBonnesAdresses.apk'",
+    "e2e": "maestro test .maestro -e EMAIL=e2e@mesbonnesadresses.fr -e PASSWORD=secret123",
+    "e2e:report": "maestro test .maestro -e EMAIL=e2e@mesbonnesadresses.fr -e PASSWORD=secret123 --format junit --output e2e-report.xml"
   },
   "dependencies": {
     "@maplibre/maplibre-react-native": "^10.4.2",
@@ -34,13 +38,14 @@
     "@react-native/eslint-config": "0.79.6",
     "@react-native/metro-config": "0.79.6",
     "@react-native/typescript-config": "0.79.6",
+    "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.0.0",
     "@types/react-test-renderer": "^19.0.0",
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
     "prettier": "2.8.8",
-    "react-test-renderer": "19.0.0",
+    "react-test-renderer": "^19.0.0",
     "typescript": "5.0.4"
   },
   "engines": {
