@@ -9,12 +9,12 @@ describe('AddressCard', () => {
 
         expect(screen.getByText('Boulangerie du coin')).toBeTruthy();
         expect(screen.getByText('Le meilleur croissant du quartier')).toBeTruthy();
-        expect(screen.getByText('🌍 Publique')).toBeTruthy();
+        expect(screen.getByText('Publique')).toBeTruthy();
     });
 
     it('affiche le badge privé', () => {
         render(<AddressCard address={makeAddress({ isPublic: false })} isMine />);
-        expect(screen.getByText('🔒 Privée')).toBeTruthy();
+        expect(screen.getByText('Privée')).toBeTruthy();
     });
 
     it('affiche l’auteur uniquement pour les adresses des autres', () => {

@@ -4,6 +4,7 @@ flows:
 executionOrder:
   continueOnFailure: false
   flowsOrder:
+    - 00_setup_account
     - 01_register
     - 02_login_logout
     - 03_address_lifecycle

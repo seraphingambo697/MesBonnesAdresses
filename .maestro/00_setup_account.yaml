@@ -1,0 +1,53 @@
+appId: com.mesbonnesadresses
+name: 00_setup_account
+---
+# Cree le compte de test s'il n'existe pas encore
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible:
+      id: "go-register"
+    timeout: 15000
+- tapOn:
+    id: "go-register"
+- tapOn:
+    id: "register-name"
+- inputText: "Testeur E2E"
+- hideKeyboard
+- tapOn:
+    id: "register-email"
+- inputText: ${EMAIL}
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "register-password"
+    direction: DOWN
+- tapOn:
+    id: "register-password"
+- inputText: ${PASSWORD}
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "register-confirm"
+    direction: DOWN
+- tapOn:
+    id: "register-confirm"
+- inputText: ${PASSWORD}
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "register-submit"
+    direction: DOWN
+- tapOn:
+    id: "register-submit"
+- waitForAnimationToEnd:
+    timeout: 8000
+
+# Compte deja existant : on ferme l'alerte, ce n'est pas une erreur
+- runFlow:
+    when:
+      visible: "Cette adresse e-mail est déjà utilisée"
+    commands:
+      - tapOn: "OK"
